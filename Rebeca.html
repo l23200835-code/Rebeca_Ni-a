@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Para ti</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:-apple-system,Arial,sans-serif;}
+html,body{width:100%;height:100%;background:radial-gradient(circle at top,#0a0a10,#000);color:#fff;}
+body{position:relative;min-height:100vh;overflow-x:hidden;}
+
+#flowerLayer{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+.flower{position:absolute;top:-60px;font-size:1.8rem;animation:fall linear forwards;will-change:transform;}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg);}}
+
+#scene{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-items:center;text-align:center;flex-direction:column;padding:24px;cursor:pointer;z-index:10;}
+#text{font-size:clamp(1.3rem,5vw,2rem);max-width:700px;line-height:1.6;color:#f2d6e2;transition:opacity 0.3s;}
+
+#game{display:none;position:fixed;top:0;left:0;width:100%;height:100%;justify-content:center;align-items:center;flex-direction:column;text-align:center;padding:24px;z-index:10;}
+.question{font-size:clamp(1.1rem,4vw,1.5rem);color:#f2a7c1;margin-bottom:10px;max-width:600px;}
+.reward{font-size:clamp(0.85rem,3vw,1rem);color:#c9a3b5;margin-bottom:28px;}
+
+.options{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;align-items:center;}
+.option{background:#111;border:1px solid #2f2f3a;padding:14px 22px;border-radius:12px;cursor:pointer;transition:transform 0.4s ease,opacity 0.3s,font-size 0.4s ease,box-shadow 0.4s ease,border-color 0.4s ease;font-size:clamp(0.9rem,3vw,1rem);transform-origin:center;-webkit-user-select:none;user-select:none;min-width:100px;}
+.option:active{opacity:0.7;}
+.shrink{transform:scale(0.72)!important;opacity:0.5!important;}
+#msg{margin-top:22px;min-height:36px;color:#ffd1e0;font-size:clamp(0.85rem,3vw,1rem);}
+
+#final{display:none;position:fixed;top:0;left:0;width:100%;height:100%;justify-content:center;align-items:center;flex-direction:column;text-align:center;background:#0b0010;z-index:20;padding:24px;}
+#finalHeart{font-size:3.5rem;margin-bottom:20px;display:inline-block;opacity:0;transform:scale(0.2);}
+#finalText{color:#f2a7c1;font-size:clamp(1.2rem,5vw,1.7rem);max-width:500px;line-height:1.5;opacity:0;transform:translateY(20px);}
+#finalSub{color:#c9a3b5;font-size:clamp(0.8rem,3vw,0.95rem);margin-top:12px;opacity:0;}
+#restartBtn{margin-top:28px;padding:12px 24px;border:1px solid #f2a7c1;background:transparent;color:#f2a7c1;border-radius:12px;cursor:pointer;font-size:0.95rem;opacity:0;}
+
+@keyframes heartPop{0%{opacity:0;transform:scale(0.2)}60%{transform:scale(1.3)}80%{transform:scale(0.9)}100%{opacity:1;transform:scale(1)}}
+@keyframes heartBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes flash{0%{opacity:0.6}100%{opacity:0}}
+
+#flashEl{position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;opacity:0;pointer-events:none;z-index:19;}
+.confetti-piece{position:fixed;top:50%;left:50%;pointer-events:none;z-index:18;}
+</style>
+</head>
+<body>
+
+<div id="flowerLayer"></div>
+<div id="flashEl"></div>
+
+<div id="scene"><div id="text"></div></div>
+
+<div id="game">
+  <div class="question">"Rojo por dentro, verde por fuera, y tiene semillas de sandía."</div>
+  <div class="reward">Si aciertas… me debes un beso.</div>
+  <div class="options">
+    <div class="option" id="manzana" onclick="pick('manzana')">Manzana</div>
+    <div class="option" id="fresa" onclick="pick('fresa')">Fresa</div>
+    <div class="option" id="mango" onclick="pick('mango')">Mango</div>
+    <div class="option" id="sandia" onclick="pick('sandia')">Sandía 🍉</div>
+  </div>
+  <div id="msg"></div>
+</div>
+
+<div id="final">
+  <div id="finalHeart">💕</div>
+  <h1 id="finalText">Correcto. Me debes muchos besos, niña.</h1>
+  <p id="finalSub">Y los voy a cobrar todos.</p>
+  <button id="restartBtn" onclick="location.reload()">Reiniciar para más besos</button>
+</div>
+
+<script>
+const flowers=["🌸","🌷","🌺","🌹","💮","🌼","🌻"];
+const layer=document.getElementById("flowerLayer");
+setInterval(()=>{
+  const f=document.createElement("div");
+  f.classList.add("flower");
+  f.innerText=flowers[Math.floor(Math.random()*flowers.length)];
+  f.style.left=Math.random()*100+"vw";
+  f.style.animationDuration=(5+Math.random()*5)+"s";
+  layer.appendChild(f);
+  setTimeout(()=>f.remove(),11000);
+},200);
+
+const lines=[
+  "Hola niñaa",
+  "Esto no solo es una página.",
+  "Es para decirte algo que aun no te he dicho.",
+  "Me gustas...",
+  "En tus ojos…",
+  "En tu pelo…",
+  "En tus labios…",
+  "En tu forma de ser…",
+  "Y aunque nos falta por conocernos…",
+  "ya me gusta mucho la versión que conozco de ti.",
+  "Ahora adivina algo…"
+];
+let i=0;
+const textEl=document.getElementById("text");
+textEl.innerText=lines[i];
+document.getElementById("scene").addEventListener("click",()=>{
+  i++;
+  if(i<lines.length){
+    textEl.style.opacity="0";
+    setTimeout(()=>{textEl.innerText=lines[i];textEl.style.opacity="1";},180);
+  } else {startGame();}
+});
+
+function startGame(){
+  document.getElementById("scene").style.display="none";
+  document.getElementById("game").style.display="flex";
+}
+
+let wrongCount=0;
+const sandiaEl=document.getElementById("sandia");
+
+function pick(val){
+  if(val==="sandia"){triggerWin();return;}
+  const el=document.getElementById(val);
+  el.classList.add("shrink");
+  el.style.pointerEvents="none";
+  el.onclick=null;
+  wrongCount++;
+  const sc=1+wrongCount*0.38;
+  const glow=12+wrongCount*18;
+  sandiaEl.style.transform=`scale(${sc})`;
+  sandiaEl.style.borderColor="#f2a7c1";
+  sandiaEl.style.boxShadow=`0 0 ${glow}px rgba(242,167,193,${Math.min(0.3+wrongCount*0.22,0.95)})`;
+  sandiaEl.style.fontSize=`${1+wrongCount*0.28}rem`;
+  const hints={manzana:"No… pista: es verde por fuera.",fresa:"No… es más grande.",mango:"No… rojo por dentro y semillas negras."};
+  document.getElementById("msg").innerText=hints[val]||"";
+}
+
+function triggerWin(){
+  const flashEl=document.getElementById("flashEl");
+  flashEl.style.animation="none";
+  void flashEl.offsetWidth;
+  flashEl.style.animation="flash 0.5s ease forwards";
+  launchConfetti();
+  setTimeout(()=>{
+    document.getElementById("game").style.display="none";
+    document.getElementById("final").style.display="flex";
+    const heart=document.getElementById("finalHeart");
+    const txt=document.getElementById("finalText");
+    const sub=document.getElementById("finalSub");
+    const btn=document.getElementById("restartBtn");
+    heart.style.animation="heartPop 0.7s cubic-bezier(.36,.07,.19,.97) forwards";
+    setTimeout(()=>{
+      heart.style.animation="heartPop 0.7s cubic-bezier(.36,.07,.19,.97) forwards, heartBeat 1.2s ease-in-out 0.7s infinite";
+    },700);
+    setTimeout(()=>{txt.style.animation="fadeUp 0.6s ease forwards";},500);
+    setTimeout(()=>{sub.style.animation="fadeUp 0.5s ease forwards";},900);
+    setTimeout(()=>{btn.style.animation="fadeUp 0.5s ease forwards";},1200);
+  },300);
+}
+
+function launchConfetti(){
+  const emojis=["💕","🌸","💗","🌹","✨","🌷","💖","🌺"];
+  for(let n=0;n<32;n++){
+    const el=document.createElement("div");
+    el.classList.add("confetti-piece");
+    el.innerText=emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.fontSize=(0.9+Math.random()*1.4)+"rem";
+    const angle=Math.random()*360;
+    const dist=80+Math.random()*220;
+    const rad=angle*Math.PI/180;
+    const tx=Math.cos(rad)*dist;
+    const ty=Math.sin(rad)*dist;
+    const dur=(0.7+Math.random()*0.9)*1000;
+    const delay=Math.random()*200;
+    document.body.appendChild(el);
+    el.animate([
+      {transform:`translate(-50%,-50%) scale(1)`,opacity:1},
+      {transform:`translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(0.3)`,opacity:0}
+    ],{duration:dur,delay:delay,fill:"forwards",easing:"ease-out"});
+    setTimeout(()=>el.remove(),dur+delay+100);
+  }
+}
+</script>
+</body>
+</html>
